@@ -53,7 +53,7 @@ var DTV = (function () {
                     $("#statusLine").text("Active node: " + data.node);
                 },
                 click: function (event, data) {
-                    // clickイベント                    
+                    // open entity record only when clicking on the title
                     if (data.targetType === "title") {
                         $("#entityFrame").attr("src", "");
                         $("#entityFrame").attr("src", baseUrl + "&id=%7B" + data.node.data.selfId + "%7D");
@@ -65,26 +65,22 @@ var DTV = (function () {
         ConvertDataForTreeView: function (data) {
             var treeData = [];
 
-            // データ入れ子変換
+            // conver to tree data
             for (var i = 0; i < data.value.length; i++) {
-                //var parentid = data.value[i]._parentaccountid_value;
-                //var title = data.value[i].name;
-                //var accountid = data.value[i].accountid;
                 var parentid = data.value[i][Config.ParentFieldName];
                 var title = data.value[i][Config.TitleFieldName];
                 var selfId = data.value[i][Config.RecordIdFieldName];
 
-                // ノード
                 var node = {
                     title: title,
                     selfId: selfId
                 };
 
                 if (!parentid) {
-                    // 最上位（親なし）
+                    // parent
                     treeData.push(node);
                 } else {
-                    // 子捜査
+                    // search for child data
                     DTV.SearchChildren(treeData, parentid, node);
                 }
             }
@@ -106,7 +102,6 @@ var DTV = (function () {
                             if (data[k][key] === parentid) {
                                 return data;
                             } else {
-                                // 再帰
                                 DTV.SearchChildren(data[k][key], parentid, node);
                             }
                         };
